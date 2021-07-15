@@ -7,18 +7,21 @@ def cos_distance(descriptor_a, descriptor_b):
 
 def matching(database, new_descriptor, threshold):
     """Compares new face descriptor to database and returns name with the lowest distance - if not under threshold, returns unknown
-    Input:
+    Parameters:
         database -- type: Dict
             database of name : Profile
         new_descriptor -- type: np.array
             the average descriptor from input image
         threshold -- type: int
             max distance between input image and item in database to be considered a match
+    Output:
+        String
+            name or Unknown
     """
     distances = []
     for name in database:
         #find the cosine distance between each avg and the new_descriptor, append to [distances]
-        distances.append(cos_distance(database[name], new_descriptor))
+        distances.append(cos_distance(np.mean(database[name]), new_descriptor))
 
     #find the lowest distance value
     lowest_distance = min(distances)

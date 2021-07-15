@@ -1,0 +1,188 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# In[1]:
+
+
+import skimage.io as io
+import camera
+import networkx as nx
+import numpy as np
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
+
+
+# Notes: 
+# - there are no labels/truths to compare our data to
+# - unknown number of clusters to classify with
+# 
+
+# In[3]:
+
+
+class Node:
+    """ Describes a node in a graph, and the edges connected
+        to that node."""
+
+    def __init__(self, ID, neighbors, descriptor, truth=None, file_path=None):
+        """
+        Parameters
+        ----------
+        ID : int
+            A unique identifier for this node. Should be a
+            value in [0, N-1], if there are N nodes in total.
+
+        neighbors : Sequence[tuple(int, int)]
+            The tuples of (node-IDs, distance) of the neighbors of this node
+
+        descriptor : numpy.ndarray
+            The shape-(512,) descriptor vector for the face that this node corresponds to.
+
+        truth : Optional[str]
+            If you have truth data, for checking your clustering algorithm,
+            you can include the label to check your clusters at the end.
+            If this node corresponds to a picture of Ryan, this truth
+            value can just be "Ryan"
+
+        file_path : Optional[str]
+            The file path of the image corresponding to this node, so
+            that you can sort the photos after you run your clustering
+            algorithm
+        """
+        self.id = ID  # a unique identified for this node - this should never change
+
+        # The node's label is initialized with the node's ID value at first,
+        # this label is then updated during the whispers algorithm
+        self.label = ID
+
+        # (n1_ID, n2_ID, ...)
+        # The IDs of this nodes neighbors. Empty if no neighbors
+        self.neighbors = tuple(neighbors)
+        self.descriptor = descriptor
+
+        self.truth = truth
+        self.file_path = file_path
+
+
+def plot_graph(graph, adj):
+    """ Use the package networkx to produce a diagrammatic plot of the graph, with
+    the nodes in the graph colored according to their current labels.
+    Note that only 20 unique colors are available for the current color map,
+    so common colors across nodes may be coincidental.
+    Parameters
+    ----------
+    graph : Tuple[Node, ...]
+        The graph to plot. This is simple a tuple of the nodes in the graph.
+        Each element should be an instance of the `Node`-class.
+
+    adj : numpy.ndarray, shape=(N, N)
+        The adjacency-matrix for the graph. Nonzero entries indicate
+        the presence of edges.
+
+    Returns
+    -------
+    Tuple[matplotlib.fig.Fig, matplotlib.axis.Axes]
+        The figure and axes for the plot."""
+
+    g = nx.Graph()
+    for n, node in enumerate(graph):
+        g.add_node(n)
+
+    # construct a network-x graph from the adjacency matrix: a non-zero entry at adj[i, j]
+    # indicates that an egde is present between Node-i and Node-j. Because the edges are
+    # undirected, the adjacency matrix must be symmetric, thus we only look ate the triangular
+    # upper-half of the entries to avoid adding redundant nodes/edges
+    g.add_edges_from(zip(*np.where(np.triu(adj) > 0)))
+
+    # we want to visualize our graph of nodes and edges; to give the graph a spatial representation,
+    # we treat each node as a point in 2D space, and edges like compressed springs. We simulate
+    # all of these springs decompressing (relaxing) to naturally space out the nodes of the graph
+    # this will hopefully give us a sensible (x, y) for each node, so that our graph is given
+    # a reasonable visual depiction
+    pos = nx.spring_layout(g)
+
+    # make a mapping that maps: node-lab -> color, for each unique label in the graph
+    color = list(iter(cm.tab20b(np.linspace(0, 1, len(set(i.label for i in graph))))))
+    color_map = dict(zip(sorted(set(i.label for i in graph)), color))
+    colors = [color_map[i.label] for i in graph]  # the color for each node in the graph, according to the node's label
+
+    # render the visualization of the graph, with the nodes colored based on their labels!
+    fig, ax = plt.subplots()
+    nx.draw_networkx_nodes(g, pos=pos, ax=ax, nodelist=range(len(graph)), node_color=colors)
+    nx.draw_networkx_edges(g, pos, ax=ax, edgelist=g.edges())
+    return fig, ax
+
+
+# In[21]:
+
+
+def neighbor_distance(node1, node2, threshold=0.6):
+    #change threshold later
+    '''
+    Fuction to check whether two nodes are neighbors.
+    
+    Parameters
+    ----------
+    node1: Node object
+    node2: another Node object
+    threshold: if the cosine distance between node1 and node2 is less than this value, 
+        then the two nodes are neighbors
+        
+    Returns
+    -------
+    weight of edge if nodes are connected, else returns 0
+    '''
+    #check cos_distance function later (from * import *)
+    distance = cos_distance(node1.descriptor, node2.descriptor)
+    if distance < threshold:
+        return 1/(distance**2)
+    return 0
+
+
+# In[22]:
+
+
+def find_neighbors(test_node, nodes):
+    '''
+    Parameters
+    ----------
+    test_node: the node to find neighbors for
+    nodes: the list of all nodes that should be searched
+    
+    
+    Updates the neighbors of a node
+    '''
+    neighbor_nodes= []
+    for node in nodes:
+        dist = neighbor_distance(test_node, node)
+        if neighbor_distance(test_node, node):
+            neighbor_nodes.append(tuple(node.id, dist))
+    test_node.neighbors = neighbor_nodes
+    
+
+def create_adj_matrix(nodes):
+    '''
+    Creates and adjacency matrix from a list of nodes
+    
+    Parameters
+    ----------
+    nodes: Iterable[node1, node2, ...]
+    
+    Returns
+    -------
+    adj: adjacency matrix for all nodes in nodes
+    '''
+    n = len(nodes)
+    adj = np.zeros((n,n))
+    #try vecotrizing later
+    for i in range(len(adj)):
+        for j in range(len(adj[0])):
+            adj[i][j] = neighbor_distance(nodes[i], nodes[j])
+    return adj
+
+
+# In[ ]:
+
+
+
+
