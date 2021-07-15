@@ -7,7 +7,7 @@ class Profile:
     def __call__(self, name, descriptor_vector):
         return self.add_to_database(name, descriptor_vector)
 
-    def add_to_database(self, name, descriptor_vector):
+    def add_to_database(self, database, name, descriptor_vector):
         """ Takes in user-inputted name and descriptor vector from FaceNet and adds to pickled database.
 
         Parameters
