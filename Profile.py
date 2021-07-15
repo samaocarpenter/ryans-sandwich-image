@@ -1,8 +1,5 @@
 import numpy as np
 
-database = {}
-
-
 class Profile:
     def __init__(self) -> None:
         pass
@@ -32,24 +29,3 @@ class Profile:
             database[name] = [descriptor_vector]
 
         return database
-
-
-profiler = Profile()
-name = "Henry"
-descriptor_vector = np.arange(5)
-print("Test 1: ", profiler(name, descriptor_vector))
-name = "Henry"
-descriptor_vector = np.arange(5, 10)
-print("Test 2: ", profiler(name, descriptor_vector))
-name = "Sam"
-descriptor_vector = np.arange(10, 15)
-print("Test 3: ", profiler(name, descriptor_vector))
-name = "Tobechi"
-descriptor_vector = np.arange(10, 15)
-print("Test 3: ", profiler(name, descriptor_vector))
-name = "Laya"
-descriptor_vector = np.arange(10, 15)
-print("Test 3: ", profiler(name, descriptor_vector))
-name = "Sam"
-descriptor_vector = np.arange(15, 20)
-print("Test 3: ", profiler(name, descriptor_vector))
