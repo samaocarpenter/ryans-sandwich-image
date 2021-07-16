@@ -3,7 +3,7 @@ import numpy as np
 
 def cos_distance(descriptor_a, descriptor_b):
     """Takes in two arrays of descriptors and returns their cosine distance."""
-    return 1 - (descriptor_a @ descriptor_b) / (np.abs(descriptor_a) @ np.abs(descriptor_a))
+    return 1 - (descriptor_a @ descriptor_b) / (np.linalg.norm(descriptor_a) * np.linalg.norm(descriptor_b))
 
 def matching(database, new_descriptor, threshold):
     """Compares new face descriptor to database and returns name with the lowest distance - if not under threshold, returns unknown
