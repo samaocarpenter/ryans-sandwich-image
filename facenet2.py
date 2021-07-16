@@ -107,13 +107,6 @@ def show_imagebox(image, boxes, probabilities, landmarks):
 
 
 #img_array = take_picture()
-photoPath = r"C:\Users\tobec\Downloads\selenaGomez.jpg"
-photo_img = Image.open(photoPath)
-img = np.asarray(photo_img)
-descriptor, boxes, probabilities, landmarks = describe_image(img)
-
-show_imagebox(img, boxes, probabilities, landmarks)
-
 
 # In[69]:
 
