@@ -117,7 +117,7 @@ def plot_graph(graph, adj):
 # In[21]:
 
 
-def neighbor_distance(node1, node2, threshold=0.6):
+def neighbor_distance(node1, node2, threshold=0.5):
     #change threshold later
     '''
     Fuction to check whether two nodes are neighbors.
@@ -136,6 +136,8 @@ def neighbor_distance(node1, node2, threshold=0.6):
     #check cos_distance function later (from * import *)
     distance = cos_distance(node1.descriptor, node2.descriptor)
     if distance < threshold:
+        if distance == 0:
+            distance = 10**-8
         return 1/(distance**2)
     return 0
 
@@ -157,7 +159,7 @@ def find_neighbors(test_node, nodes):
     for node in nodes:
         dist = neighbor_distance(test_node, node)
         if neighbor_distance(test_node, node) and test_node != node:
-            neighbor_nodes.append(tuple(node.id, dist))
+            neighbor_nodes.append([node.id, dist])
     test_node.neighbors = neighbor_nodes
     
 
@@ -187,11 +189,11 @@ def create_adj_matrix(nodes):
 
     return adj
 
-def algorithm(nodes, adj):
+def algorithm(nodes):
     """"""
-    n = len(adj)
+    n = len(nodes)
     #for number of iterations
-    for iteration in range(len(adj)**2):
+    for iteration in range(n**2):
         #pick random node
         node_id = np.random.randint(0, n)
         #count frequency of neighbor labels
@@ -199,17 +201,18 @@ def algorithm(nodes, adj):
         
         for neighbor in nodes[node_id].neighbors:
             real_neighbor = nodes[neighbor[0]]
-            if neighbor.label not in label_weights:
+            if real_neighbor.label not in label_weights:
                 label_weights[real_neighbor.label] = neighbor[1]
             else:
                 label_weights[real_neighbor.label] += neighbor[1]
-
+        print(type(label_weights))
         #take most frequent label
-        label_keys = [label_weights.keys()]
-        label_values = [label_weights.values()]
-        max_label = label_keys[max(label_values).index()]
-
-        nodes[node_id].label = max_label
+        highest = (0,0)
+        for key, value in label_weights.items():
+            if highest[1] < value:
+                highest = (key, value)
+        if label_weights:
+            nodes[node_id].label = highest[0]
         
 
 # In[ ]:

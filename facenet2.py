@@ -25,7 +25,7 @@ get_ipython().run_line_magic('matplotlib', 'notebook')
 
 # In[2]:
 
-
+model = FacenetModel()
 def describe_image(image):
     """Takes image, reshapes it, and returns descriptors, 
     probabilites, and landmarks
@@ -47,7 +47,6 @@ def describe_image(image):
                     
     landmarks - shape-(N, 5, 2) 
                 arrays of facial landmarks corresponding to each detected face."""
-    model = FacenetModel()
     boxes, probabilities, landmarks = model.detect(image) #model detect returns boxes, prob%%, and landmark
     
     #-------
