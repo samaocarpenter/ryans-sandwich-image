@@ -10,6 +10,7 @@ import networkx as nx
 import numpy as np
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
+from matching_py import cos_distance
 
 
 # Notes: 
@@ -33,7 +34,7 @@ class Node:
             value in [0, N-1], if there are N nodes in total.
 
         neighbors : Sequence[tuple(int, int)]
-            The tuples of (node-IDs, distance) of the neighbors of this node
+            The tuples of (node-IDs, weight) of the neighbors of this node
 
         descriptor : numpy.ndarray
             The shape-(512,) descriptor vector for the face that this node corresponds to.
@@ -155,7 +156,7 @@ def find_neighbors(test_node, nodes):
     neighbor_nodes= []
     for node in nodes:
         dist = neighbor_distance(test_node, node)
-        if neighbor_distance(test_node, node):
+        if neighbor_distance(test_node, node) and test_node != node:
             neighbor_nodes.append(tuple(node.id, dist))
     test_node.neighbors = neighbor_nodes
     
@@ -183,6 +184,33 @@ def create_adj_matrix(nodes):
     for node in nodes:
         for neighbor in node.neighbors:
             adj[node.ID][neighbor[0]] = neighbor[1]
+
+    return adj
+
+def algorithm(nodes, adj):
+    """"""
+    n = len(adj)
+    #for number of iterations
+    for iteration in range(len(adj)**2):
+        #pick random node
+        node_id = np.random.randint(0, n)
+        #count frequency of neighbor labels
+        label_weights = {}
+        
+        for neighbor in nodes[node_id].neighbors:
+            real_neighbor = nodes[neighbor[0]]
+            if neighbor.label not in label_weights:
+                label_weights[real_neighbor.label] = neighbor[1]
+            else:
+                label_weights[real_neighbor.label] += neighbor[1]
+
+        #take most frequent label
+        label_keys = [label_weights.keys()]
+        label_values = [label_weights.values()]
+        max_label = label_keys[max(label_values).index()]
+
+        nodes[node_id].label = max_label
+        
 
 # In[ ]:
 
