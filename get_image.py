@@ -26,12 +26,8 @@ def get_image() :
             # Image is RGBA, where A is alpha -> transparency
             # Must make image RGB.
             image = image[..., :-1]
-        
-    fig,ax = plt.subplots()
-    ax.imshow(image)
-    check_or_load = input("Are you loading or checking your image?")
 
-    return image, check_or_load
+    return image
 
 
 

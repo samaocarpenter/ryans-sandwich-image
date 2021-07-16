@@ -21,13 +21,13 @@ def matching(database, new_descriptor, threshold):
     distances = []
     for name in database:
         #find the cosine distance between each avg and the new_descriptor, append to [distances]
-        distances.append(cos_distance(np.mean(database[name], axis=0), new_descriptor))
+        distances.append((cos_distance(np.mean(database[name], axis=0), new_descriptor), name))
 
     #find the lowest distance value
     lowest_distance = min(distances)
     #if below threshold, return name
-    if lowest_distance < threshold:
-        return name
+    if lowest_distance[0] < threshold:
+        return lowest_distance[1]
     #else return unknown
     return "Unknown :("
     
