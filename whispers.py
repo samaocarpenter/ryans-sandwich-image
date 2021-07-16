@@ -172,14 +172,17 @@ def create_adj_matrix(nodes):
     -------
     adj: adjacency matrix for all nodes in nodes
     '''
+    for node in nodes:
+        find_neighbors(node, nodes)
+    
     n = len(nodes)
     adj = np.zeros((n,n))
     #try vecotrizing later
-    for i in range(len(adj)):
-        for j in range(len(adj[0])):
-            adj[i][j] = neighbor_distance(nodes[i], nodes[j])
-    return adj
-
+    
+    
+    for node in nodes:
+        for neighbor in node.neighbors:
+            adj[node.ID][neighbor[0]] = neighbor[1]
 
 # In[ ]:
 
