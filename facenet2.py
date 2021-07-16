@@ -70,7 +70,7 @@ def describe_image(image):
 # In[3]:
 
 
-def show_imagebox(image, boxes, probabilities, landmarks):
+def show_imagebox(names, image, boxes, probabilities, landmarks):
     """Plots the faces with boxes on a matplotlib plot
     
     Params
@@ -93,13 +93,14 @@ def show_imagebox(image, boxes, probabilities, landmarks):
     fig,ax = plt.subplots()
     ax.imshow(image)
     
-    for box, prob, lm in zip(boxes, probabilities, landmarks):
+    for name, box, prob, lm in zip(names, boxes, probabilities, landmarks):
         ax.add_patch(Rectangle(box[:2], *(box[2:] - box[:2]), fill=None, lw=2, color="red"))
-
-    # Get the landmarks/parts for the face in box d.
-    # Draw the face landmarks on the screen.
-    for i in range(len(lm)):
-        ax.plot(lm[i, 0], lm[i, 1], "+", color="blue")
+        #print(box, name)
+        ax.text(box[0], box[1], s=name, fontsize=12, color="white")
+        # Get the landmarks/parts for the face in box d.
+        # Draw the face landmarks on the screen.
+        for i in range(len(lm)):
+            ax.plot(lm[i, 0], lm[i, 1], "+", color="blue")
     
 
 
