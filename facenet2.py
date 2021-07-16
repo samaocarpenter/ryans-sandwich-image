@@ -96,7 +96,7 @@ def show_imagebox(names, image, boxes, probabilities, landmarks):
     for name, box, prob, lm in zip(names, boxes, probabilities, landmarks):
         ax.add_patch(Rectangle(box[:2], *(box[2:] - box[:2]), fill=None, lw=2, color="red"))
         #print(box, name)
-        ax.text(box[0], box[1], s=name, fontsize=12, color="white")
+        ax.text(box[0], box[1], s=name, fontsize=12, color="white", fontfamily='monospace', fontweight='bold')
         # Get the landmarks/parts for the face in box d.
         # Draw the face landmarks on the screen.
         for i in range(len(lm)):
